@@ -21,6 +21,8 @@ class HashMapConcurrente {
 
     hashMapPair maximo();
     hashMapPair maximoParalelo(unsigned int cantThreads);
+    // Nuestro
+    hashMapPair maximoParalelo(std::atomic<int> &);
 
  private:
     ListaAtomica<hashMapPair> *tabla[HashMapConcurrente::cantLetras];
