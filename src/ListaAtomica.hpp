@@ -32,8 +32,7 @@ class ListaAtomica {
         // Completar (Ejercicio 1)
         Nodo *nuevo_nodo = new Nodo(valor);
         nuevo_nodo->_siguiente = _cabeza;
-        // Preguntar si importa el orden de inserción. Ahi cambia si usar strong o weak.
-        while (!_cabeza.compare_exchange_strong(nuevo_nodo->_siguiente, nuevo_nodo));
+        while (!_cabeza.compare_exchange_weak(nuevo_nodo->_siguiente, nuevo_nodo));
     }
 
     T &cabeza() const {

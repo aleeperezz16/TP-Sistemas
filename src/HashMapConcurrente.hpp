@@ -4,6 +4,7 @@
 #include <atomic>
 #include <string>
 #include <vector>
+#include <mutex>
 
 #include "ListaAtomica.hpp"
 
@@ -21,13 +22,12 @@ class HashMapConcurrente {
 
     hashMapPair maximo();
     hashMapPair maximoParalelo(unsigned int cantThreads);
-    // Nuestro
-    hashMapPair maximoParalelo(std::atomic<int> &);
-
  private:
     ListaAtomica<hashMapPair> *tabla[HashMapConcurrente::cantLetras];
 
     static unsigned int hashIndex(std::string clave);
+    // nuestro
+    void maximo_threads(hashMapPair *max, std::atomic<int> &pos, std::mutex &mtx_threads);
 };
 
 #endif  /* HMC_HPP */
