@@ -10,7 +10,6 @@
 #include "HashMapConcurrente.hpp"
 
 std::mutex mtx[HashMapConcurrente::cantLetras];
-std::mutex mtx_insertar[HashMapConcurrente::cantLetras];
 
 HashMapConcurrente::HashMapConcurrente() {
     for (unsigned int i = 0; i < HashMapConcurrente::cantLetras; i++) {
@@ -36,7 +35,6 @@ void HashMapConcurrente::incrementar(std::string clave) {
         }
     }
 
-    std::lock_guard<std::mutex> ul(mtx_insertar[index]);
     tabla[index]->insertar({ clave, 1 });
 }
 
@@ -44,7 +42,6 @@ std::vector<std::string> HashMapConcurrente::claves() {
     // Completar (Ejercicio 2)
     std::vector<std::string> claves;
     for (unsigned int i = 0; i < cantLetras; i++) {
-        std::lock_guard<std::mutex> ul(mtx_insertar[i]);
         for (auto it = tabla[i]->crearIt(); it.haySiguiente(); it.avanzar())
             claves.push_back(it.siguiente().first);
     }
