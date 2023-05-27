@@ -8,6 +8,7 @@
 #include <mutex>
 
 #include "HashMapConcurrente.hpp"
+#include "Experimentacion.hpp"
 
 std::mutex mtx[HashMapConcurrente::cantLetras];
 
@@ -83,16 +84,21 @@ hashMapPair HashMapConcurrente::maximo() {
     return *max;
 }
 
-void HashMapConcurrente::maximo_threads(hashMapPair *max, std::atomic<int> &pos, std::mutex &mtx_threads)
+void HashMapConcurrente::maximo_threads(hashMapPair *max, std::atomic<int> &pos, std::mutex &mtx_threads, unsigned int thread_id)
 {
     hashMapPair max_th("", 0);
     unsigned int i;
     while ((i = pos++) < HashMapConcurrente::cantLetras) {
+        std::cout << "Thread " << thread_id + 1 << " leyendo tabla '" << static_cast<char>('a' + i) << "'\n";
+        auto inicio = std::chrono::high_resolution_clock::now();
         for (auto it = tabla[i]->crearIt(); it.haySiguiente(); it.avanzar()) {
             hashMapPair par = it.siguiente();
             if (par.second > max_th.second)
                 max_th = par;
         }
+        auto fin = std::chrono::high_resolution_clock::now();
+
+        tiempo_thread[thread_id] += fin - inicio;
     }
 
     mtx_threads.lock();
@@ -108,11 +114,15 @@ hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cantThreads) {
     std::mutex mtx_threads;
     hashMapPair *max = new hashMapPair("", 0);
 
+    tiempo_thread.resize(cantThreads, std::chrono::seconds::zero());
+
     for (unsigned int i = 0; i < cantThreads; i++)
-        threads.emplace_back(&HashMapConcurrente::maximo_threads, this, max, std::ref(pos), std::ref(mtx_threads));
+        threads.emplace_back(&HashMapConcurrente::maximo_threads, this, max, std::ref(pos), std::ref(mtx_threads), i);
 
     for (auto &t : threads)
         t.join();
+
+    analizar_resultado_maximo(cantThreads);
 
     return *max;
 }

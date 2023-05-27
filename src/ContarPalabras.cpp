@@ -18,6 +18,7 @@ int main(int argc, char **argv) {
             << "Archivos a procesar." << std::endl;
         return 1;
     }
+    
     int cantThreadsLectura = std::stoi(argv[1]);
     int cantThreadsMaximo = std::stoi(argv[2]);
 
