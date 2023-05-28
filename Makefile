@@ -7,7 +7,7 @@ BUILD_DIR = ./build
 TARGET = ContarPalabras
 TEST_TARGET = UnitTests
 
-OBJECTS = HashMapConcurrente.o CargarArchivos.o Experimentacion.o
+OBJECTS = HashMapConcurrente.o CargarArchivos.o
 
 all: build $(BUILD_DIR)/$(TARGET)
 
@@ -32,3 +32,13 @@ debug: all
 
 clean:
 	-@rm -rvf $(BUILD_DIR)/*
+
+maximo:
+	$(CXX) $(CXXFLAGS) src/exp/Maximo.cpp src/HashMapConcurrente.cpp src/CargarArchivos.cpp -o $(BUILD_DIR)/maximo $(LDFLAGS)
+
+archivos:
+	$(CXX) $(CXXFLAGS) src/exp/CargarArchivos.cpp src/HashMapConcurrente.cpp src/CargarArchivos.cpp -o $(BUILD_DIR)/archivos $(LDFLAGS)
+
+paralelo:
+	$(CXX) $(CXXFLAGS) src/exp/MaximoParalelo.cpp src/HashMapConcurrente.cpp src/CargarArchivos.cpp -o $(BUILD_DIR)/paralelo $(LDFLAGS)
+

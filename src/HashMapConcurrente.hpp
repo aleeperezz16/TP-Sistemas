@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <mutex>
+#include <chrono>
 
 #include "ListaAtomica.hpp"
 
@@ -22,6 +23,10 @@ class HashMapConcurrente {
 
     hashMapPair maximo();
     hashMapPair maximoParalelo(unsigned int cantThreads);
+    
+    // nuestro
+    std::vector<std::chrono::duration<double>> tiempo_thread;
+    std::vector<int> contador_archivos_abiertos;
  private:
     ListaAtomica<hashMapPair> *tabla[HashMapConcurrente::cantLetras];
 

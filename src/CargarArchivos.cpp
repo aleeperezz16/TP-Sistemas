@@ -7,7 +7,6 @@
 #include <thread>
 
 #include "CargarArchivos.hpp"
-#include "Experimentacion.hpp"
 
 int cargarArchivo(
     HashMapConcurrente &hashMap,
@@ -48,7 +47,8 @@ void cargar_archivo_threads(HashMapConcurrente &hashMap, std::atomic<int> &pos, 
         cargarArchivo(hashMap, filePaths[i]);
         auto fin = std::chrono::high_resolution_clock::now();
 
-	    tiempo_thread[thread_id] += fin - inicio;
+	    hashMap.tiempo_thread[thread_id] += fin - inicio;
+        hashMap.contador_archivos_abiertos[thread_id]++;
     }
 }
 
@@ -61,15 +61,14 @@ void cargarMultiplesArchivos(
     std::vector<std::thread> threads;
     std::atomic<int> pos(0);
 
-    tiempo_thread.resize(cantThreads, std::chrono::seconds::zero());
+    hashMap.tiempo_thread.resize(cantThreads, std::chrono::seconds::zero());
+    hashMap.contador_archivos_abiertos.resize(cantThreads, 0);
 
     for (unsigned int i = 0; i < cantThreads; i++)
         threads.emplace_back(cargar_archivo_threads, std::ref(hashMap), std::ref(pos), std::ref(filePaths), i);
 
     for (auto &t : threads)
         t.join();
-
-    analizar_resultado_archivos(cantThreads, filePaths);
 }
 
 #endif
