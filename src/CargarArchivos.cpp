@@ -42,7 +42,6 @@ void cargar_archivo_threads(HashMapConcurrente &hashMap, std::atomic<int> &pos, 
     unsigned int i;
     unsigned int N = filePaths.size();
     while ((i = pos++) < N) {
-        std::cout << "Thread " << thread_id + 1 << " cargando filepath " << filePaths[i] << "\n";
         auto inicio = std::chrono::high_resolution_clock::now();
         cargarArchivo(hashMap, filePaths[i]);
         auto fin = std::chrono::high_resolution_clock::now();

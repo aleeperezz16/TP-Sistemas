@@ -52,7 +52,7 @@ int main(int argc, char **argv) {
     else
         mediana_abiertos /= cantThreads;
 
-    std::cout << totalTime << " " << tiempo_medio << " " << mediana_abiertos << std::endl;
+    std::cout << cantThreads << " " << filePaths.size() << " " << totalTime << " " << tiempo_medio << " " << mediana_abiertos;
 
     return 0;
 }
