@@ -32,7 +32,7 @@ class HashMapConcurrente {
 
     static unsigned int hashIndex(std::string clave);
     // nuestro
-    void maximo_threads(hashMapPair *max, std::atomic<int> &pos, std::mutex &mtx_threads, unsigned int thread_id);
+    void maximo_threads(hashMapPair *max, uint inicio, uint fin, std::mutex &mtx_threads, unsigned int thread_id);
 };
 
 #endif  /* HMC_HPP */

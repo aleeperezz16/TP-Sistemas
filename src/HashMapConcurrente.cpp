@@ -63,11 +63,13 @@ unsigned int HashMapConcurrente::valor(std::string clave) {
 }
 
 hashMapPair HashMapConcurrente::maximo() {
+    for (uint i = 0; i < cantLetras; i++)
+        mtx[i].lock();
+
     hashMapPair *max = new hashMapPair();
     max->second = 0;
 
     for (unsigned int index = 0; index < HashMapConcurrente::cantLetras; index++) {
-        std::lock_guard<std::mutex> lg(mtx[index]);
         for (
             auto it = tabla[index]->crearIt();
             it.haySiguiente();
@@ -78,21 +80,27 @@ hashMapPair HashMapConcurrente::maximo() {
                 max->second = it.siguiente().second;
             }
         }
+
+        mtx[index].unlock();
     }
 
     return *max;
 }
 
-void HashMapConcurrente::maximo_threads(hashMapPair *max, std::atomic<int> &pos, std::mutex &mtx_threads, unsigned int thread_id)
+void HashMapConcurrente::maximo_threads(hashMapPair *max, uint inicio, uint fin, std::mutex &mtx_threads, unsigned int thread_id)
 {
+    for (uint i = inicio; i < fin; i++)
+        mtx[i].lock();
+
     hashMapPair max_th("", 0);
-    unsigned int i;
-    while ((i = pos++) < HashMapConcurrente::cantLetras) {
+    for (uint i = inicio; i < fin; i++) {
         for (auto it = tabla[i]->crearIt(); it.haySiguiente(); it.avanzar()) {
             hashMapPair par = it.siguiente();
             if (par.second > max_th.second)
                 max_th = par;
         }
+
+        mtx[i].unlock();
     }
 
     mtx_threads.lock();
@@ -104,13 +112,22 @@ void HashMapConcurrente::maximo_threads(hashMapPair *max, std::atomic<int> &pos,
 hashMapPair HashMapConcurrente::maximoParalelo(unsigned int cantThreads) {
     // Completar (Ejercicio 3)
     std::vector<std::thread> threads;
-    std::atomic<int> pos(0);
     std::mutex mtx_threads;
     hashMapPair *max = new hashMapPair("", 0);
 
-    for (unsigned int i = 0; i < cantThreads; i++)
-        threads.emplace_back(&HashMapConcurrente::maximo_threads, this, max, std::ref(pos), std::ref(mtx_threads), i);
+    cantThreads = std::min(cantThreads, std::thread::hardware_concurrency());
+    uint step = cantLetras / cantThreads;
+    uint resto = cantLetras % cantThreads;
 
+    for (uint i = 0, inicio = 0, fin, agregado = 1; i < cantThreads; i++) {
+        if (resto-- < 1)
+            agregado = 0;
+        
+        fin = inicio + step + agregado;
+        threads.emplace_back(&HashMapConcurrente::maximo_threads, this, max, inicio, fin, std::ref(mtx_threads), i);
+        inicio = fin;
+    }
+    
     for (auto &t : threads)
         t.join();
 

@@ -60,6 +60,7 @@ void cargarMultiplesArchivos(
     std::vector<std::thread> threads;
     std::atomic<int> pos(0);
 
+    cantThreads = std::min(cantThreads, std::thread::hardware_concurrency());
     hashMap.tiempo_thread.resize(cantThreads, std::chrono::seconds::zero());
     hashMap.contador_archivos_abiertos.resize(cantThreads, 0);
 
