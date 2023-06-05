@@ -5,7 +5,7 @@
 #include "../CargarArchivos.hpp"
 
 int main(int argc, char **argv) {
-    if (argc < 3) {
+    if (argc < 3) { // argv[0] : nombre main , argv[1] : cantThreads , argv[2] : cantArchivos , argv[3] : archivo1 , argv[4] : archivo2 ...
         std::cout << "Error: faltan argumentos." << std::endl;
         std::cout << std::endl;
         std::cout << "Modo de uso: " << argv[0] << " <threads_lectura>" << std::endl;
@@ -19,10 +19,12 @@ int main(int argc, char **argv) {
     }
     int cantThreads = std::stoi(argv[1]);
 
+    int cantFiles = std::stoi(argv[2]);
+
     HashMapConcurrente hashMap = HashMapConcurrente();
     std::vector<std::string> filePaths = {};
 
-    for (int i = 2; i < argc; i++)
+    for (int i = 3; i < cantFiles; i++)
         filePaths.push_back(argv[i]);
 
     auto start = std::chrono::high_resolution_clock::now();
