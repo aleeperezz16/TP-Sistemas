@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
             min = c;
     }
 
-    if (cantThreads > 2)
+    if (cantThreads > 3)
         mediana_abiertos = (mediana_abiertos - max - min) / (cantThreads - 2);
     else
         mediana_abiertos /= cantThreads;
